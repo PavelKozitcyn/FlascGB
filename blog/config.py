@@ -1,26 +1,17 @@
-import click
-from werkzeug.security import generate_password_hash
+import os
 
-from blog.extensions import db
+from dotenv import load_dotenv
 
+from blog.enums import EnvType
 
-@click.command('init-db')
-def init_db():
-    # import models for creating tables
-    # from Flask.wsgi import app
-    from blog.models import User
+load_dotenv()
 
-    # db.create_all(app=app)
-    db.create_all()
+ENV = os.getenv('FLASK_ENV', default=EnvType.production)
+DEBUG = ENV == EnvType.development
 
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-@click.command('create-init-user')
-def create_init_user():
-    from blog.models import User
-    from wsgi import app
+SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    with app.app_context():
-        db.session.add(
-            User(email='name@example.com', password=generate_password_hash('test123'))
-        )
-        db.session.commit()
+WTF_CSRF_ENABLED = True
