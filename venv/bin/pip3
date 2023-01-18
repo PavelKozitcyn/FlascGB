@@ -1,4 +1,4 @@
-#!/home/paul/Flasc/FlascGB/venv/bin/python3
+#!/home/paul/PycharmProjects/FlascGB/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
