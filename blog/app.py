@@ -1,10 +1,12 @@
 import os
-
+from combojsonapi.event import EventPlugin
+from combojsonapi.permission import PermissionPlugin
+from combojsonapi.spec import ApiSpecPlugin
 from flask import Flask
 
 from blog import commands
 from blog.config import SECRET_KEY
-from blog.extensions import db, login_manager, migrate, csrf, admin
+from blog.extensions import db, login_manager, migrate, csrf, admin, api
 from blog.models import User
 
 
@@ -27,6 +29,20 @@ def register_extensions(app):
     migrate.init_app(app, db, compare_type=True)
     csrf.init_app(app)
     admin.init_app(app)
+    api.plugins = [
+        EventPlugin(),
+        PermissionPlugin(),
+        ApiSpecPlugin(
+            app=app,
+            tags={
+                'Tag': 'Tag API',
+                'User': 'User API',
+                'Author': 'Author API',
+                'Article': 'Article API',
+            }
+        ),
+    ]
+    api.init_app(app)
 
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
@@ -41,12 +57,14 @@ def register_blueprints(app: Flask):
     from blog.user.views import user
     from blog.authors.views import author
     from blog.articles.views import article
+    from blog.api.views import api_blueprint
     from blog import admin
 
     app.register_blueprint(user)
     app.register_blueprint(auth)
     app.register_blueprint(author)
     app.register_blueprint(article)
+    app.register_blueprint(api_blueprint)
     admin.register_views()
 
 
